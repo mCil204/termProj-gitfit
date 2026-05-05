@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GitFIT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+<div class="app">
+
+  <header class="header">
+    <div class="logo">Git<span>FIT</span></div>
+    <a href="/auth/logout" class="user-pill" title="Click to log out">
+      <div class="user-avatar"><%= username[0].toUpperCase() %></div>
+      <span class="user-name"><%= username %></span>
+    </a>
+  </header>
+
+  <nav class="nav">
+    <a href="/"           class="nav-btn <%= tab === 'home'       ? 'active' : '' %>">Home</a>
+    <a href="/workouts"   class="nav-btn <%= tab === 'workouts'   ? 'active' : '' %>">Workouts</a>
+    <a href="/activities" class="nav-btn <%= tab === 'activities' ? 'active' : '' %>">Activities</a>
+  </nav>
+
+  <main class="content">

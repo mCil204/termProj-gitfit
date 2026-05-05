@@ -1,0 +1,20 @@
+<%- include('../partials/header') %>
+
+<div class="section-label">Browse by Body Part</div>
+
+<% if (error) { %>
+  <div class="error-msg"><%= error %></div>
+<% } %>
+
+<div class="workout-grid">
+  <% bodyParts.forEach(function(part) { %>
+    <a href="/exercises/<%= part %>" class="workout-tile">
+      <div class="workout-tile-left">
+        <div class="workout-tile-label" style="text-transform:capitalize"><%= part %></div>
+      </div>
+      <div class="add-tile-btn">→</div>
+    </a>
+  <% }) %>
+</div>
+
+<%- include('../partials/footer') %>

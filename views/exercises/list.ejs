@@ -1,0 +1,28 @@
+<%- include('../partials/header') %>
+
+<a href="/exercises" style="display:inline-flex;align-items:center;gap:6px;color:#666;font-size:13px;margin-bottom:16px;">
+  ← Back
+</a>
+
+<div class="section-label" style="text-transform:capitalize"><%= bodyPart %> Exercises</div>
+
+<% exercises.forEach(function(ex) { %>
+  <div class="activity-card" style="align-items:center;">
+    <% if (ex.gifUrl) { %>
+      <img src="<%= ex.gifUrl %>" alt="<%= ex.name %>"
+           style="width:60px;height:60px;border-radius:10px;object-fit:cover;flex-shrink:0;" />
+    <% } else { %>
+      <div class="activity-icon">🏋️</div>
+    <% } %>
+    <div class="activity-info">
+      <div class="activity-title" style="text-transform:capitalize"><%= ex.name %></div>
+      <div class="activity-date" style="text-transform:capitalize">
+        <%= ex.equipment %> · <%= ex.target %>
+      </div>
+    </div>
+    <a href="/activities/new?type=weight&label=<%= encodeURIComponent(ex.name) %>"
+       class="icon-btn" title="Log this exercise" style="font-size:16px;">+</a>
+  </div>
+<% }) %>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,201 @@
+<%
+  const isEdit  = activity !== null;
+  const title   = isEdit ? 'EDIT ACTIVITY' : 'LOG ACTIVITY';
+  const action  = isEdit ? `/activities/${activity.id}/edit` : '/activities';
+
+  const TYPES = [
+    { id: 'run',      label: 'Run'            },
+    { id: 'weight',   label: 'Weight Training' },
+    { id: 'tennis',   label: 'Tennis'          },
+    { id: 'cycling',  label: 'Cycling'         },
+    { id: 'swimming', label: 'Swimming'        },
+    { id: 'custom',   label: 'Custom Entry'    },
+  ];
+
+  const selectedType = isEdit ? activity.type : (prefillType || 'run');
+  const today = new Date().toISOString().split('T')[0];
+%>
+<%- include('partials/header') %>
+
+<div class="modal-title"><%= title %></div>
+
+<% if (error) { %>
+  <div class="error-msg"><%= error %></div>
+<% } %>
+
+<form action="<%= action %>" method="POST">
+
+  <!-- ── Workout Type ── -->
+  <div class="form-group">
+    <label class="form-label">Workout Type</label>
+    <select class="form-select" name="type" id="typeSelect" onchange="onTypeChange()">
+      <% TYPES.forEach(function(t) { %>
+        <option value="<%= t.id %>"
+                data-label="<%= t.label %>"
+                <%= selectedType === t.id ? 'selected' : '' %>>
+          <%= t.label %>
+        </option>
+      <% }) %>
+    </select>
+    <input type="hidden" name="label" id="labelInput"
+           value="<%= isEdit ? activity.label : '' %>" />
+  </div>
+
+  <!-- ── ExerciseDB Search (shown for weight training) ── -->
+  <div class="form-group" id="searchGroup" style="display:none;">
+    <label class="form-label">Search Exercise <span style="color:#555;font-weight:400;text-transform:none;">(powered by ExerciseDB)</span></label>
+    <input class="form-input" type="text" id="exerciseSearch"
+           placeholder="e.g. bench press, squat, curl..."
+           autocomplete="off" />
+    <div id="searchResults" class="search-results"></div>
+    <div id="selectedExercise" class="selected-exercise" style="display:none;"></div>
+  </div>
+
+   <!-- ── Custom Activity Name ── -->
+  <div class="form-group" id="customLabelGroup" style="display:none;">
+    <label class="form-label">Activity Name</label>
+    <input class="form-input" type="text" id="customLabelInput"
+           placeholder="e.g. Hiking, Basketball, Yoga..."
+           oninput="document.getElementById('labelInput').value = this.value" />
+  </div>
+
+  <!-- ── Date ── -->
+  <div class="form-group">
+    <label class="form-label">Date</label>
+    <input class="form-input" type="date" name="date"
+           value="<%= isEdit ? activity.date.toISOString().split('T')[0] : today %>"
+           required />
+  </div>
+
+  <!-- ── Duration ── -->
+  <div class="form-group">
+    <label class="form-label">Duration (minutes)</label>
+    <input class="form-input" type="number" name="duration" min="1" placeholder="e.g. 30"
+           value="<%= isEdit ? activity.duration : '' %>" required />
+  </div>
+
+  <!-- ── Notes ── -->
+  <div class="form-group">
+    <label class="form-label">Notes (optional)</label>
+    <textarea class="form-textarea" name="notes"
+              placeholder="Where, how it felt, what you did..."><%= isEdit ? activity.notes : '' %></textarea>
+  </div>
+
+  <div class="btn-row">
+    <a href="<%= isEdit ? '/activities' : '/workouts' %>" class="btn-secondary">Cancel</a>
+    <button class="btn-primary" type="submit"><%= isEdit ? 'Save Changes' : 'Save Activity' %></button>
+  </div>
+
+</form>
+
+<script>
+  // ── On type dropdown change ───────────────────────────────────────────────
+function onTypeChange() {
+    const sel    = document.getElementById('typeSelect');
+    const option = sel.options[sel.selectedIndex];
+
+    document.getElementById('labelInput').value = option.dataset.label;
+
+    // Show exercise search only for weight training
+    const searchGroup = document.getElementById('searchGroup');
+    if (sel.value === 'weight') {
+      searchGroup.style.display = 'block';
+    } else {
+      searchGroup.style.display = 'none';
+      clearSearch();
+    }
+
+    // Show custom name input only for custom entry
+    const customGroup = document.getElementById('customLabelGroup');
+    customGroup.style.display = sel.value === 'custom' ? 'block' : 'none';
+    if (sel.value !== 'custom') {
+      document.getElementById('customLabelInput').value = '';
+    }
+  }
+
+  // ── ExerciseDB live search ────────────────────────────────────────────────
+  let searchTimeout;
+
+  document.getElementById('exerciseSearch').addEventListener('input', function () {
+    clearTimeout(searchTimeout);
+    const q = this.value.trim();
+    if (q.length < 2) {
+      document.getElementById('searchResults').innerHTML = '';
+      return;
+    }
+    // Debounce — wait 400ms after typing stops before hitting the API
+    searchTimeout = setTimeout(() => fetchExercises(q), 400);
+  });
+
+  // GET /exercises/search?q=... — calls our server which calls ExerciseDB
+  async function fetchExercises(q) {
+    const resultsEl = document.getElementById('searchResults');
+    resultsEl.innerHTML = '<div class="search-hint">Searching...</div>';
+    try {
+      const res  = await fetch(`/exercises/search?q=${encodeURIComponent(q)}`);
+      const data = await res.json();
+      renderResults(data);
+    } catch (err) {
+      resultsEl.innerHTML = '<div class="search-hint">Search failed. Try again.</div>';
+    }
+  }
+
+  function renderResults(exercises) {
+    const el = document.getElementById('searchResults');
+    if (!exercises.length) {
+      el.innerHTML = '<div class="search-hint">No results found.</div>';
+      return;
+    }
+    el.innerHTML = '';
+    exercises.forEach(ex => {
+      const div = document.createElement('div');
+      div.className = 'search-result-item';
+      div.innerHTML = `
+        <div class="result-name">${ex.name}</div>
+        <div class="result-meta">${ex.bodyPart} · ${ex.target} · ${ex.equipment}</div>
+      `;
+      div.addEventListener('mousedown', () => {
+        selectExercise(ex.id, ex.name, ex.bodyPart, ex.target, ex.equipment);
+      });
+      el.appendChild(div);
+    });
+  }
+
+  function selectExercise(id, name, bodyPart, target, equipment) {
+    // Fill the hidden label with the exercise name
+    document.getElementById('labelInput').value = name;
+
+    // Show selected exercise pill
+    const sel = document.getElementById('selectedExercise');
+    sel.style.display = 'block';
+    sel.innerHTML = `
+      <div class="selected-pill">
+        <div>
+          <div class="selected-name">${name}</div>
+          <div class="selected-meta">${bodyPart} · ${target} · ${equipment}</div>
+        </div>
+        <button type="button" onclick="clearSearch()" class="clear-btn">✕</button>
+      </div>
+    `;
+
+    // Clear search UI
+    document.getElementById('searchResults').innerHTML = '';
+    document.getElementById('exerciseSearch').value = '';
+  }
+
+  function clearSearch() {
+    document.getElementById('searchResults').innerHTML = '';
+    document.getElementById('exerciseSearch').value = '';
+    document.getElementById('selectedExercise').style.display = 'none';
+    document.getElementById('labelInput').value =
+      document.getElementById('typeSelect').options[
+        document.getElementById('typeSelect').selectedIndex
+      ].dataset.label;
+  }
+
+  // Run on load
+  onTypeChange();
+  
+</script>
+
+<%- include('partials/footer') %>

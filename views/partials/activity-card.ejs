@@ -1,0 +1,30 @@
+<%
+  // activity = { id, icon, label, date, duration, kcal, notes }
+  // showActions = true/false
+  const dateStr = new Date(activity.date).toLocaleDateString('en-US', {
+    month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC'
+  });
+%>
+<div class="activity-card">
+  <div class="activity-icon"><%= activity.icon %></div>
+  <div class="activity-info">
+    <div class="activity-title"><%= activity.label %></div>
+    <div class="activity-date"><%= dateStr %></div>
+    <% if (activity.notes) { %>
+      <div class="activity-notes"><%= activity.notes %></div>
+    <% } %>
+    <div class="activity-meta">
+      <span class="kcal-badge">~<%= activity.kcal %> kcal</span>
+      <span class="duration-badge"><%= activity.duration %> min</span>
+    </div>
+  </div>
+  <% if (showActions) { %>
+    <div class="card-actions">
+      <a href="/activities/<%= activity.id %>/edit" class="icon-btn" title="Edit">✏️</a>
+      <form action="/activities/<%= activity.id %>/delete" method="POST"
+            onsubmit="return confirm('Delete this activity?')">
+        <button class="icon-btn delete" type="submit" title="Delete">🗑</button>
+      </form>
+    </div>
+  <% } %>
+</div>

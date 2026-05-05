@@ -1,0 +1,18 @@
+<%- include('partials/header') %>
+
+<div class="section-label"><%= activities.length %> Activities Logged</div>
+
+<% if (activities.length === 0) { %>
+  <div class="empty">
+    <div class="empty-icon">📋</div>
+    <div class="empty-text">No activities yet.<br />Head to Workouts to get started.</div>
+  </div>
+<% } else { %>
+  <% activities.forEach(function(activity) { %>
+    <%- include('partials/activity-card', { activity, showActions: true }) %>
+  <% }) %>
+<% } %>
+
+<a href="/activities/new" class="fab">+</a>
+
+<%- include('partials/footer') %>

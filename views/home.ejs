@@ -1,0 +1,33 @@
+<%- include('partials/header') %>
+
+<div class="stats-row">
+  <div class="stat-card">
+    <div class="stat-value"><%= stats.total_workouts %></div>
+    <div class="stat-label">Workouts</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value"><%= Number(stats.total_kcal).toLocaleString() %></div>
+    <div class="stat-label">Kcal</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value"><%= stats.total_mins %></div>
+    <div class="stat-label">Minutes</div>
+  </div>
+</div>
+
+<div class="section-label">Recent Activity</div>
+
+<% if (recent.length === 0) { %>
+  <div class="empty">
+    <div class="empty-icon">🏁</div>
+    <div class="empty-text">No workouts yet.<br />Tap + to log your first one.</div>
+  </div>
+<% } else { %>
+  <% recent.forEach(function(activity) { %>
+    <%- include('partials/activity-card', { activity, showActions: false }) %>
+  <% }) %>
+<% } %>
+
+<a href="/activities/new" class="fab">+</a>
+
+<%- include('partials/footer') %>
