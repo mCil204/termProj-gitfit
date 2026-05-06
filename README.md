@@ -5,40 +5,59 @@ disclaimer: Don't use like personal emails/info. use a burner google account or 
 
 setup:
 Node.js
+
 PostgreSQL
+
 A Google Cloud project with OAuth 2.0 credentials
 
 1. Clone the repository
+
 2. Install dependencie: npm install
+
 3. Set up environment variables
+
 Create a .env file in the root directory with the following:
+
 DATABASE_URL='postgre connection string'
-SESSION_SECRET=
+
+SESSION_SECRET='your_personal_string'
+
 PORT= 'if local run, then 3000'
+
 clientID= 'google auth credentials'
+
 clientSecret='google auth cred'
+
 ExerciseAPI_Key='from ExerciseDB by Justin H.'
 
 4. Set up the database
+
 Run your SQL schema to initialize the PostgreSQL database
 
 5. Start the server
+
 node server.js
+
 or
+
 npm run dev
 
 http://localhost:3000
 
 http://localhost:3000/auth/google/callback
 
+
 Reflection:
 
 Design Choices
 Frontend: EJS was chosen for the frontend because I wanted to try something new and different rather than just our usual web vanilla development method.
+
 Backend: Node.js + Express. This was the natural choice given that they things I was familiar with.
+
 PostgreSQL was the same. Most of my choices were framed around familiarity.
 
 Authentication: Google Auth.
+
 
 Challenges
 Nearly every part of this project presented a real challenge.
