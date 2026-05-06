@@ -37,6 +37,7 @@ Design Choices
 Frontend: EJS was chosen for the frontend because I wanted to try something new and different rather than just our usual web vanilla development method.
 Backend: Node.js + Express. This was the natural choice given that they things I was familiar with.
 PostgreSQL was the same. Most of my choices were framed around familiarity.
+
 Authentication: Google Auth.
 
 Challenges
@@ -49,7 +50,9 @@ Learning Outcomes
 This project provided hands-on experience with nearly every layer of full-stack development, whetehr I wanted it or not. Things like:
 
 -How OAuth 2.0 flows work in practice, including redirect handling, token exchange, and session persistence
+
 -The importance of .gitignore before making a repository public
+
 -How to render and deployment environments. I had to understand how they differ from local development, and how to configure apps to run correctly in both
 
 
