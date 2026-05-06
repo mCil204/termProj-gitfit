@@ -42,7 +42,7 @@ Authentication: Google Auth.
 
 Challenges
 Nearly every part of this project presented a real challenge.
-Google OAuth setup had me dealing with URIs, client credentials, and a whole bunch of mismatch3w caused failures that were difficult to debug.
+Google OAuth setup had me dealing with URIs, client credentials, and a whole bunch of mismatches caused failures that were difficult to debug.
 Deployment on Render required understanding how environment variables are injected at runtime, how Render detects the start command, and how to troubleshoot startup crashes from missing config.
 
 
